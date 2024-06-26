@@ -142,18 +142,24 @@ class CameraFeed:
 
         cur = db_connection.cursor()
         cur.execute(
-            "SELECT * FROM pictures ORDER BY embedding <-> %s LIMIT 1",
+            "SELECT *, (embedding <-> %s) AS distance FROM pictures ORDER BY distance LIMIT 1",
             (string_representation,),
         )
 
-        rows = cur.fetchall()
-        if len(rows) == 0:
+        result = cur.fetchone()
+        # print(result[0])
+        print(result[1])  # picture_id
+        print(result[2])  # user_id
+        print(result[3])  # embedding distance
+
+        distance = result[3]
+
+        if distance > 15:
             print("No match found")
-            messagebox.showerror("Error", "No match found")
+            messagebox.showinfo("No Match Found", "No match found")
             return
 
-        print(rows)
-        cur.execute("SELECT * FROM users WHERE id = %s", (rows[0][1],))
+        cur.execute("SELECT * FROM users WHERE id = %s", (result[1],))
         user = cur.fetchone()
         print(user)
         print(f"Match found: {user[1]} {user[2]}")
