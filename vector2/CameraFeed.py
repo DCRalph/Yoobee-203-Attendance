@@ -148,8 +148,8 @@ class CameraFeed:
 
         result = cur.fetchone()
         # print(result[0])
-        print(result[1])  # picture_id
-        print(result[2])  # user_id
+        print(result[1])  # userid
+        print(result[2])  # pictureid
         print(result[3])  # embedding distance
 
         distance = result[3]
