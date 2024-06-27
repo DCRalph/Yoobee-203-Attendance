@@ -18,7 +18,7 @@ CAMERA_FPS_MS = int(1000 / CAMERA_FPS)
 CAMERA_WIDTH = 1920
 CAMERA_HEIGHT = 1080
 
-FACE_DETECT_ALG_PATH = "vector2/haarcascade_frontalface_default.xml"
+FACE_DETECT_ALG_PATH = "src/haarcascade_frontalface_default.xml"
 FACE_DETECT_ALG = cv2.CascadeClassifier(FACE_DETECT_ALG_PATH)
 
 

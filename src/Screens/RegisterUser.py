@@ -74,20 +74,24 @@ class RegisterUser:
             (first_name, last_name),
         )
 
-        if cur.fetchone():
-            print("User already exists")
-            messagebox.showerror("Error", "User already exists")
-            return
-
-        userId = str(uuid.uuid4())
+        userId = None
         pictureId = str(uuid.uuid4())
 
+        existing_user = cur.fetchone()
+
+        if existing_user:
+            print("User already exists")
+            userId = existing_user[Common.UsersSchema.id]
+
+        else:
+
+            userId = str(uuid.uuid4())
+
+            cur.execute(
+                "INSERT INTO users VALUES (%s, %s, %s)", (userId, first_name, last_name)
+            )
+
         b64Img = HandleImages.save_image_to_cache(self.userImage, pictureId)
-
-        cur.execute(
-            "INSERT INTO users VALUES (%s, %s, %s)", (userId, first_name, last_name)
-        )
-
         cur.execute(
             "INSERT INTO pictures VALUES (%s, %s, %s, %s)",
             (self.embedding[0].tolist(), userId, pictureId, b64Img),
@@ -95,7 +99,11 @@ class RegisterUser:
 
         db_connection.commit()
         cur.close()
-        messagebox.showinfo("Success", "User registered successfully")
+
+        if existing_user:
+            messagebox.showinfo("Success", "Added picture to existing user")
+        else:
+            messagebox.showinfo("Success", "User registered successfully")
 
         self.on_closing()
 

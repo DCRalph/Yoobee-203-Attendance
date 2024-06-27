@@ -13,7 +13,7 @@ from Secrets import Secrets
 db_connection = psycopg2.connect(Secrets.PG_URI)
 
 # Define the cache directory
-CACHE_DIR = "vector2/image_cache"
+CACHE_DIR = "src/image_cache"
 
 # Ensure the cache directory exists
 if not os.path.exists(CACHE_DIR):

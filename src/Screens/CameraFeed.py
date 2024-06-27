@@ -18,7 +18,7 @@ CAMERA_FPS_MS = int(1000 / CAMERA_FPS)
 CAMERA_WIDTH = 1920
 CAMERA_HEIGHT = 1080
 
-FACE_DETECT_ALG_PATH = "vector2/haarcascade_frontalface_default.xml"
+FACE_DETECT_ALG_PATH = "src/haarcascade_frontalface_default.xml"
 FACE_DETECT_ALG = cv2.CascadeClassifier(FACE_DETECT_ALG_PATH)
 
 
@@ -43,6 +43,11 @@ class CameraFeed:
 
         self.label = tk.Label(self.window)
         self.label.grid(row=0, column=0, columnspan=2)
+
+        # self.canvas = tk.Canvas(self.window, width=1280, height=720)
+        # self.canvas.grid(row=0, column=0, columnspan=2)
+
+        # self.image_id = None
 
         # scan button
         self.scan_button = tk.Button(
@@ -75,9 +80,11 @@ class CameraFeed:
         self.start_feed()
 
     def start_feed(self):
+        # self.running = True
+        # self.thread = threading.Thread(target=self.update_feed_gui_safe)
+        # self.thread.start()
         self.running = True
-        self.thread = threading.Thread(target=self.update_feed_gui_safe)
-        self.thread.start()
+        self.update_feed_gui_safe()
 
     def update_feed_gui_safe(self):
         if self.running:
@@ -101,7 +108,36 @@ class CameraFeed:
 
             else:
                 print("Error reading frame")
-            self.label.after(CAMERA_FPS_MS, self.update_feed_gui_safe)
+            self.label.after(10, self.update_feed_gui_safe)
+        
+    # def update_feed_gui_safe(self):
+    #     if self.running:
+    #         ret, self.frame = self.cap.read()
+
+    #         if ret:
+    #             self.frame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)
+    #             self.frame = cv2.resize(self.frame, (1280, 720))
+
+    #             frameCopy = self.frame.copy()
+
+    #             self.detect_faces()
+    #             for x, y, w, h in self.faces:
+    #                 cv2.rectangle(frameCopy, (x, y), (x + w, y + h), (255, 0, 0), 2)
+
+    #             img = Image.fromarray(frameCopy)
+    #             imgtk = ImageTk.PhotoImage(image=img)
+
+    #             self.imgtk = imgtk
+
+    #             if self.image_id:
+    #                 self.canvas.itemconfig(self.image_id, image=self.imgtk)
+    #             else:
+    #                 self.image_id = self.canvas.create_image((0, 0), image=self.imgtk, anchor=tk.NW)
+    #                 self.canvas.configure(width=img.width, height=img.height)
+
+    #         else:
+    #             print("Error reading frame")
+    #         self.canvas.after(10, self.update_feed_gui_safe)
 
     def detect_faces(self):
         gray_frame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
