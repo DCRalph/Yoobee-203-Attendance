@@ -7,8 +7,10 @@ from PIL import Image, ImageTk
 import psycopg2
 from imgbeddings import imgbeddings
 from Secrets import Secrets
+from Common import Common
+import HandleImages
 
-from RegisterUser import RegisterUser
+from Screens.RegisterUser import RegisterUser
 
 
 CAMERA_FPS = 60
@@ -19,7 +21,6 @@ CAMERA_HEIGHT = 1080
 FACE_DETECT_ALG_PATH = "vector2/haarcascade_frontalface_default.xml"
 FACE_DETECT_ALG = cv2.CascadeClassifier(FACE_DETECT_ALG_PATH)
 
-SAVED_PICTURES_PATH = "vector2/savedPictures"
 
 db_connection = psycopg2.connect(Secrets.PG_URI)
 
@@ -147,12 +148,13 @@ class CameraFeed:
         )
 
         result = cur.fetchone()
-        # print(result[0])
-        print(result[1])  # userid
-        print(result[2])  # pictureid
-        print(result[3])  # embedding distance
 
-        distance = result[3]
+        if result is None:
+            print("No match found")
+            messagebox.showinfo("No Match Found", "No match found")
+            return
+
+        distance = result[Common.PicturesSchema.distance]
 
         if distance > 15:
             print("No match found")
@@ -162,8 +164,19 @@ class CameraFeed:
         cur.execute("SELECT * FROM users WHERE id = %s", (result[1],))
         user = cur.fetchone()
         print(user)
-        print(f"Match found: {user[1]} {user[2]}")
-        messagebox.showinfo("Match Found", f"Match found: {user[1]} {user[2]}")
+        print(
+            f"Match found: {user[Common.UsersSchema.firstName]} {user[Common.UsersSchema.lastName]}"
+        )
+
+        userImage = HandleImages.get_image_from_cache(result[Common.PicturesSchema.id])
+
+        # img = Image.fromarray(userImage)
+        userImage.show()
+
+        messagebox.showinfo(
+            "Match Found",
+            f"Match found: {user[Common.UsersSchema.firstName]} {user[Common.UsersSchema.lastName]}",
+        )
 
         cur.close()
 

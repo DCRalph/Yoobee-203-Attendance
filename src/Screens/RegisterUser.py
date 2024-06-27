@@ -7,7 +7,8 @@ from imgbeddings import imgbeddings
 from Secrets import Secrets
 import uuid
 
-SAVED_PICTURES_PATH = "vector2/savedPictures"
+from Common import Common
+import HandleImages
 
 db_connection = psycopg2.connect(Secrets.PG_URI)
 
@@ -81,17 +82,16 @@ class RegisterUser:
         userId = str(uuid.uuid4())
         pictureId = str(uuid.uuid4())
 
+        b64Img = HandleImages.save_image_to_cache(self.userImage, pictureId)
+
         cur.execute(
             "INSERT INTO users VALUES (%s, %s, %s)", (userId, first_name, last_name)
         )
 
         cur.execute(
-            "INSERT INTO pictures VALUES (%s, %s, %s)",
-            (self.embedding[0].tolist(), userId, pictureId),
+            "INSERT INTO pictures VALUES (%s, %s, %s, %s)",
+            (self.embedding[0].tolist(), userId, pictureId, b64Img),
         )
-
-        # save image to savedPictures folder
-        self.userImage.save(f"{SAVED_PICTURES_PATH}/{pictureId}.jpg")
 
         db_connection.commit()
         cur.close()

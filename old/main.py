@@ -5,7 +5,7 @@ from PIL import Image, ImageTk
 import psycopg2
 import Secrets
 
-import webcamView
+import old.webcamView as webcamView
 
 
 import Classes.Attendance
