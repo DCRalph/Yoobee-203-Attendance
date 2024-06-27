@@ -18,6 +18,8 @@ CAMERA_FPS_MS = int(1000 / CAMERA_FPS)
 CAMERA_WIDTH = 1920
 CAMERA_HEIGHT = 1080
 
+print(CAMERA_FPS_MS)
+
 FACE_DETECT_ALG_PATH = "src/haarcascade_frontalface_default.xml"
 FACE_DETECT_ALG = cv2.CascadeClassifier(FACE_DETECT_ALG_PATH)
 
@@ -108,7 +110,7 @@ class CameraFeed:
 
             else:
                 print("Error reading frame")
-            self.label.after(10, self.update_feed_gui_safe)
+            self.label.after(1, self.update_feed_gui_safe)
         
     # def update_feed_gui_safe(self):
     #     if self.running:
