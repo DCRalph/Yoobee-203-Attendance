@@ -13,10 +13,10 @@ import HandleImages
 from Screens.RegisterUser import RegisterUser
 
 
-CAMERA_FPS = 60
+CAMERA_FPS = 25
 CAMERA_FPS_MS = int(1000 / CAMERA_FPS)
-CAMERA_WIDTH = 1920
-CAMERA_HEIGHT = 1080
+CAMERA_WIDTH = 1280
+CAMERA_HEIGHT = 720
 
 print(CAMERA_FPS_MS)
 
@@ -34,6 +34,7 @@ class CameraFeed:
         self.cap = cv2.VideoCapture(0)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, CAMERA_WIDTH)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, CAMERA_HEIGHT)
+        self.cap.set(cv2.CAP_PROP_FPS, CAMERA_FPS)
 
         self.frame = None
 
