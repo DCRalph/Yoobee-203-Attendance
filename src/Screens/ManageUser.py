@@ -157,8 +157,8 @@ class ManageUser:
 
     def delete(self):
         cur = db_connection.cursor()
-        cur.execute("DELETE FROM users WHERE id = %s", (self.user_id,))
         cur.execute('DELETE FROM pictures WHERE "userId" = %s', (self.user_id,))
+        cur.execute("DELETE FROM users WHERE id = %s", (self.user_id,))
 
         db_connection.commit()
 

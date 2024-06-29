@@ -56,7 +56,10 @@ class SearchUser:
         first_name = self.first_name_entry.get()
 
         cur = db_connection.cursor()
-        cur.execute("SELECT * FROM users WHERE first_name = %s", (first_name,))
+        if first_name == "":
+            cur.execute("SELECT * FROM users")
+        else:
+            cur.execute("SELECT * FROM users WHERE first_name = %s", (first_name,))
         users = cur.fetchall()
 
         self.results_listbox.delete(0, tk.END)
