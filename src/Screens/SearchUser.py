@@ -45,7 +45,7 @@ class SearchUser:
         self.results_label = tk.Label(self.window, text="Results:")
         self.results_label.grid(row=2, column=0, columnspan=2)
 
-        self.userArrary = []
+        self.userArray = []
 
         self.results_listbox = tk.Listbox(self.window)
         self.results_listbox.grid(row=3, column=0, columnspan=2)
@@ -64,11 +64,11 @@ class SearchUser:
 
         self.results_listbox.delete(0, tk.END)
 
-        self.userArrary.clear()
+        self.userArray.clear()
 
         for i in range(len(users)):
             user = users[i]
-            self.userArrary.append(user)
+            self.userArray.append(user)
 
             listBoxStr = f"{i+1}. {user[Common.UsersSchema.firstName]} {user[Common.UsersSchema.lastName]}"
 
@@ -76,7 +76,7 @@ class SearchUser:
 
     def on_user_selected(self, event):
 
-        selected_user = self.userArrary[self.results_listbox.curselection()[0]]
+        selected_user = self.userArray[self.results_listbox.curselection()[0]]
         print(selected_user)
         user_id = selected_user[Common.UsersSchema.id]
 
