@@ -19,7 +19,7 @@ class RegisterUser:
         self.userImage = userImage
 
         self.window = Toplevel(root)
-        self.window.title("Register User")
+        self.window.title("Register Student")
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         self.ibed = imgbeddings()
@@ -48,6 +48,22 @@ class RegisterUser:
         self.last_name_entry = tk.Entry(self.window)
         self.last_name_entry.grid(row=2, column=1)
 
+        # date of birth label
+        self.date_of_birth_label = tk.Label(self.window, text="Date of Birth:")
+        self.date_of_birth_label.grid(row=3, column=0)
+
+        # date of birth entry
+        self.date_of_birth_entry = tk.Entry(self.window)
+        self.date_of_birth_entry.grid(row=3, column=1)
+
+        # gender label
+        self.gender_label = tk.Label(self.window, text="Gender:")
+        self.gender_label.grid(row=4, column=0)
+
+        # gender entry
+        self.gender_entry = tk.Entry(self.window)
+        self.gender_entry.grid(row=4, column=1)
+
         # register button
         self.register_button = tk.Button(
             self.window,
@@ -59,51 +75,53 @@ class RegisterUser:
             width=20,
             height=2,
         )
-        self.register_button.grid(row=3, column=0, columnspan=2)
+        self.register_button.grid(row=5, column=0, columnspan=2)
 
     def register(self):
         first_name = self.first_name_entry.get()
         last_name = self.last_name_entry.get()
+        date_of_birth = self.date_of_birth_entry.get()
+        gender = self.gender_entry.get()
 
-        print(f"Registering user: {first_name} {last_name}")
+        print(f"Registering student: {first_name} {last_name}")
 
         # check if user already exists
         cur = db_connection.cursor()
         cur.execute(
-            "SELECT * FROM users WHERE first_name = %s AND last_name = %s",
+            "SELECT * FROM students WHERE first_name = %s AND last_name = %s",
             (first_name, last_name),
         )
 
-        userId = None
+        studentId = None
         pictureId = str(uuid.uuid4())
 
-        existing_user = cur.fetchone()
+        existing_student = cur.fetchone()
 
-        if existing_user:
-            print("User already exists")
-            userId = existing_user[Common.UsersSchema.id]
+        if existing_student:
+            print("Student already exists")
+            studentId = existing_student[Common.StudentsSchema.id]
 
         else:
-
-            userId = str(uuid.uuid4())
+            studentId = str(uuid.uuid4())
 
             cur.execute(
-                "INSERT INTO users VALUES (%s, %s, %s)", (userId, first_name, last_name)
+                "INSERT INTO students VALUES (%s, %s, %s, %s, %s)",
+                (studentId, first_name, last_name, date_of_birth, gender),
             )
 
         b64Img = HandleImages.save_image_to_cache(self.userImage, pictureId)
         cur.execute(
             "INSERT INTO pictures VALUES (%s, %s, %s, %s)",
-            (self.embedding[0].tolist(), userId, pictureId, b64Img),
+            (self.embedding[0].tolist(), pictureId, b64Img, studentId),
         )
 
         db_connection.commit()
         cur.close()
 
-        if existing_user:
-            messagebox.showinfo("Success", "Added picture to existing user")
+        if existing_student:
+            messagebox.showinfo("Success", "Added picture to existing student")
         else:
-            messagebox.showinfo("Success", "User registered successfully")
+            messagebox.showinfo("Success", "Student registered successfully")
 
         self.on_closing()
 

@@ -3,7 +3,6 @@ import tkinter as tk
 from Screens.CameraFeed import CameraFeed
 from Screens.SearchUser import SearchUser
 
-
 class MainWindow(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -16,7 +15,7 @@ class MainWindow(tk.Tk):
         )
         self.button.pack()
 
-        # searc user button
+        # search user button
         self.button = tk.Button(self, text="Search User", command=self.search_user)
         self.button.pack()
 

@@ -182,39 +182,39 @@ class CameraFeed:
 
         cur = db_connection.cursor()
         cur.execute(
-            "SELECT *, (embedding <-> %s) AS distance FROM pictures ORDER BY distance LIMIT 1",
+            'SELECT *, (embedding <-> %s) AS distance FROM pictures ORDER BY distance LIMIT 1',
             (string_representation,),
         )
 
-        result = cur.fetchone()
+        picRes = cur.fetchone()
 
-        if result is None:
+        if picRes is None:
             print("No match found")
             messagebox.showinfo("No Match Found", "No match found")
             return
 
-        distance = result[Common.PicturesSchema.distance]
+        distance = picRes[Common.PicturesSchema.distance]
 
         if distance > 15:
             print("No match found")
             messagebox.showinfo("No Match Found", "No match found")
             return
 
-        cur.execute("SELECT * FROM users WHERE id = %s", (result[1],))
-        user = cur.fetchone()
-        print(user)
+        cur.execute("SELECT * FROM students WHERE id = %s", (picRes[Common.PicturesSchema.studentId],))
+        student = cur.fetchone()
+        print(student)
         print(
-            f"Match found: {user[Common.UsersSchema.firstName]} {user[Common.UsersSchema.lastName]}"
+            f"Match found: {student[Common.StudentsSchema.first_name]} {student[Common.StudentsSchema.last_name]}"
         )
 
-        userImage = HandleImages.get_image_from_cache(result[Common.PicturesSchema.id])
+        userImage = HandleImages.get_image_from_cache(picRes[Common.PicturesSchema.id])
 
         # img = Image.fromarray(userImage)
-        userImage.show()
+        # userImage.show()
 
         messagebox.showinfo(
             "Match Found",
-            f"Match found: {user[Common.UsersSchema.firstName]} {user[Common.UsersSchema.lastName]}",
+            f"Match found: {student[Common.StudentsSchema.first_name]} {student[Common.StudentsSchema.last_name]}",
         )
 
         cur.close()

@@ -14,28 +14,43 @@ db_connection = psycopg2.connect(Secrets.PG_URI)
 
 
 class ManageUser:
-    def __init__(self, root, user_id):
+    def __init__(self, root, studentId):
         self.root = root
-        self.user_id = user_id
+        self.studentId = studentId
 
         self.window = Toplevel(root)
         self.window.title("Manage User")
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-        self.label = tk.Label(self.window)
-        self.label.grid(row=0, column=0, columnspan=2)
-
         self.first_name_label = tk.Label(self.window, text="First Name:")
-        self.first_name_label.grid(row=1, column=0)
+        self.first_name_label.grid(row=0, column=0)
 
         self.first_name_entry = tk.Entry(self.window)
-        self.first_name_entry.grid(row=1, column=1)
+        self.first_name_entry.grid(row=0, column=1)
 
         self.last_name_label = tk.Label(self.window, text="Last Name:")
-        self.last_name_label.grid(row=2, column=0)
+        self.last_name_label.grid(row=0, column=2)
 
         self.last_name_entry = tk.Entry(self.window)
-        self.last_name_entry.grid(row=2, column=1)
+        self.last_name_entry.grid(row=0, column=3)
+
+        self.date_of_birth_label = tk.Label(self.window, text="Date of Birth:")
+        self.date_of_birth_label.grid(row=1, column=0)
+
+        self.date_of_birth_entry = tk.Entry(self.window)
+        self.date_of_birth_entry.grid(row=1, column=1)
+
+        self.gender_label = tk.Label(self.window, text="Gender:")
+        self.gender_label.grid(row=1, column=2)
+
+        self.gender_entry = tk.Entry(self.window)
+        self.gender_entry.grid(row=1, column=3)
+
+        self.class_room_label = tk.Label(self.window, text="Class Room:")
+        self.class_room_label.grid(row=2, column=0)
+
+        self.class_room_entry = tk.Entry(self.window)
+        self.class_room_entry.grid(row=2, column=1)
 
         self.update_button = tk.Button(
             self.window,
@@ -47,7 +62,7 @@ class ManageUser:
             width=20,
             height=2,
         )
-        self.update_button.grid(row=3, column=0, columnspan=2)
+        self.update_button.grid(row=3, column=0)
 
         self.delete_button = tk.Button(
             self.window,
@@ -59,7 +74,7 @@ class ManageUser:
             width=20,
             height=2,
         )
-        self.delete_button.grid(row=4, column=0, columnspan=2)
+        self.delete_button.grid(row=3, column=1)
 
         # image casarousel with next and previous buttons and current image label
 
@@ -73,7 +88,7 @@ class ManageUser:
             width=20,
             height=2,
         )
-        self.next_button.grid(row=6, column=0)
+        self.next_button.grid(row=6, column=2)
 
         self.previous_button = tk.Button(
             self.window,
@@ -85,13 +100,13 @@ class ManageUser:
             width=20,
             height=2,
         )
-        self.previous_button.grid(row=6, column=1)
+        self.previous_button.grid(row=6, column=0)
 
         self.current_image_label = tk.Label(self.window, text="Current Image: 0/0")
-        self.current_image_label.grid(row=5, column=0, columnspan=2)
+        self.current_image_label.grid(row=5, column=1)
 
         self.image_carousel = tk.Label(self.window)
-        self.image_carousel.grid(row=6, column=0, columnspan=2)
+        self.image_carousel.grid(row=6, column=1)
 
         self.images = []
         self.current_image = 0
@@ -100,13 +115,17 @@ class ManageUser:
 
     def load_user(self):
         cur = db_connection.cursor()
-        cur.execute("SELECT * FROM users WHERE id = %s", (self.user_id,))
-        user = cur.fetchone()
+        cur.execute("SELECT * FROM students WHERE id = %s", (self.studentId,))
+        student = cur.fetchone()
+        print(student)
 
-        self.first_name_entry.insert(0, user[1])
-        self.last_name_entry.insert(0, user[2])
+        self.first_name_entry.insert(0, student[Common.StudentsSchema.first_name])
+        self.last_name_entry.insert(0, student[Common.StudentsSchema.last_name])
+        self.date_of_birth_entry.insert(0, student[Common.StudentsSchema.date_of_birth])
+        self.gender_entry.insert(0, student[Common.StudentsSchema.gender])
+        self.class_room_entry.insert(0, student[Common.StudentsSchema.class_room])
 
-        cur.execute('SELECT * FROM pictures WHERE "userId" = %s', (self.user_id,))
+        cur.execute('SELECT * FROM pictures WHERE "studentId" = %s', (self.studentId,))
         pictures = cur.fetchall()
 
         self.images = []
@@ -125,7 +144,9 @@ class ManageUser:
         self.image_carousel.configure(image=img)
         self.image_carousel.image = img
 
-        self.current_image_label.configure(text=f"Current Image: {self.current_image + 1}/{len(self.images)}")
+        self.current_image_label.configure(
+            text=f"Current Image: {self.current_image + 1}/{len(self.images)}"
+        )
 
     def next_image(self):
         self.current_image += 1
@@ -144,21 +165,26 @@ class ManageUser:
     def update(self):
         first_name = self.first_name_entry.get()
         last_name = self.last_name_entry.get()
+        date_of_birth = self.date_of_birth_entry.get()
+        gender = self.gender_entry.get()
+        class_room = self.class_room_entry.get()
 
         cur = db_connection.cursor()
         cur.execute(
-            "UPDATE users SET first_name = %s, last_name = %s WHERE id = %s",
-            (first_name, last_name, self.user_id),
+            "UPDATE students SET first_name = %s, last_name = %s, date_of_birth = %s, gender = %s, class_room = %s WHERE id = %s",
+            (first_name, last_name, date_of_birth, gender, class_room, self.studentId),
         )
 
         db_connection.commit()
 
         messagebox.showinfo("Success", "User updated successfully")
 
+        self.window.destroy()
+
     def delete(self):
         cur = db_connection.cursor()
-        cur.execute('DELETE FROM pictures WHERE "userId" = %s', (self.user_id,))
-        cur.execute("DELETE FROM users WHERE id = %s", (self.user_id,))
+        cur.execute('DELETE FROM pictures WHERE "studentId" = %s', (self.studentId,))
+        cur.execute("DELETE FROM students WHERE id = %s", (self.studentId,))
 
         db_connection.commit()
 

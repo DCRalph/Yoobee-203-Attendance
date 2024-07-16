@@ -21,7 +21,7 @@ class SearchUser:
         self.root = root
 
         self.window = Toplevel(root)
-        self.window.title("Search User")
+        self.window.title("Search Student")
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         self.label = tk.Label(self.window, text="Enter First Name:")
@@ -57,28 +57,28 @@ class SearchUser:
 
         cur = db_connection.cursor()
         if first_name == "":
-            cur.execute("SELECT * FROM users")
+            cur.execute("SELECT * FROM students")
         else:
-            cur.execute("SELECT * FROM users WHERE first_name = %s", (first_name,))
-        users = cur.fetchall()
+            cur.execute("SELECT * FROM students WHERE first_name = %s", (first_name,))
+        students = cur.fetchall()
 
         self.results_listbox.delete(0, tk.END)
 
         self.userArray.clear()
 
-        for i in range(len(users)):
-            user = users[i]
-            self.userArray.append(user)
+        for i in range(len(students)):
+            student = students[i]
+            self.userArray.append(student)
 
-            listBoxStr = f"{i+1}. {user[Common.UsersSchema.firstName]} {user[Common.UsersSchema.lastName]}"
+            listBoxStr = f"{i+1}. {student[Common.StudentsSchema.first_name]} {student[Common.StudentsSchema.last_name]}"
 
             self.results_listbox.insert(tk.END, listBoxStr)
 
     def on_user_selected(self, event):
 
-        selected_user = self.userArray[self.results_listbox.curselection()[0]]
-        print(selected_user)
-        user_id = selected_user[Common.UsersSchema.id]
+        selected_student = self.userArray[self.results_listbox.curselection()[0]]
+        print(selected_student)
+        user_id = selected_student[Common.StudentsSchema.id]
 
         ManageUser(self.root, user_id)
 
