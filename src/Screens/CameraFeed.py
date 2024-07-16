@@ -10,7 +10,7 @@ from Secrets import Secrets
 from Common import Common
 import HandleImages
 
-from Screens.RegisterUser import RegisterUser
+from Screens.RegisterStudent import RegisterStudent
 
 
 CAMERA_FPS = 25
@@ -68,7 +68,7 @@ class CameraFeed:
         # register user button
         self.register_user_button = tk.Button(
             self.window,
-            text="Register User",
+            text="Register Student",
             command=self.register_user,
             background="blue",
             foreground="white",
@@ -112,7 +112,7 @@ class CameraFeed:
             else:
                 print("Error reading frame")
             self.label.after(1, self.update_feed_gui_safe)
-        
+
     # def update_feed_gui_safe(self):
     #     if self.running:
     #         ret, self.frame = self.cap.read()
@@ -182,7 +182,7 @@ class CameraFeed:
 
         cur = db_connection.cursor()
         cur.execute(
-            'SELECT *, (embedding <-> %s) AS distance FROM pictures ORDER BY distance LIMIT 1',
+            "SELECT *, (embedding <-> %s) AS distance FROM pictures ORDER BY distance LIMIT 1",
             (string_representation,),
         )
 
@@ -200,7 +200,10 @@ class CameraFeed:
             messagebox.showinfo("No Match Found", "No match found")
             return
 
-        cur.execute("SELECT * FROM students WHERE id = %s", (picRes[Common.PicturesSchema.studentId],))
+        cur.execute(
+            "SELECT * FROM students WHERE id = %s",
+            (picRes[Common.PicturesSchema.studentId],),
+        )
         student = cur.fetchone()
         print(student)
         print(
@@ -235,7 +238,7 @@ class CameraFeed:
         img = Image.fromarray(self.frame)
         cropped_image = img.crop((x, y, x + w, y + h))
 
-        RegisterUser(self.root, cropped_image)
+        RegisterStudent(self.root, cropped_image)
 
     def on_closing(self):
         self.running = False

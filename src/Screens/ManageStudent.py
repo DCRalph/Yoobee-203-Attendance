@@ -13,7 +13,7 @@ import HandleImages
 db_connection = psycopg2.connect(Secrets.PG_URI)
 
 
-class ManageUser:
+class ManageStudent:
     def __init__(self, root, studentId):
         self.root = root
         self.studentId = studentId

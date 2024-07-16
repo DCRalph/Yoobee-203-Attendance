@@ -13,7 +13,7 @@ import HandleImages
 db_connection = psycopg2.connect(Secrets.PG_URI)
 
 
-class RegisterUser:
+class RegisterStudent:
     def __init__(self, root, userImage):
         self.root = root
         self.userImage = userImage

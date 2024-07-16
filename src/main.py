@@ -1,7 +1,9 @@
 import tkinter as tk
 
 from Screens.CameraFeed import CameraFeed
-from Screens.SearchUser import SearchUser
+from Screens.SearchStudent import SearchStudent
+from Screens.TeacherLogin import TeacherLogin
+
 
 class MainWindow(tk.Tk):
     def __init__(self):
@@ -19,13 +21,21 @@ class MainWindow(tk.Tk):
         self.button = tk.Button(self, text="Search User", command=self.search_user)
         self.button.pack()
 
+        self.teacher_login_button = tk.Button(
+            self, text="Teacher Login", command=self.teacher_login
+        )
+        self.teacher_login_button.pack()
+
         self.mainloop()
 
     def open_camera_feed(self):
         CameraFeed(self)
 
     def search_user(self):
-        SearchUser(self)
+        SearchStudent(self)
+
+    def teacher_login(self):
+        TeacherLogin(self)
 
 
 if __name__ == "__main__":

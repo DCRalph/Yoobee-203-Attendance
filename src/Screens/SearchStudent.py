@@ -9,14 +9,14 @@ import uuid
 
 from Common import Common
 import HandleImages
-from Screens.ManageUser import ManageUser
+from Screens.ManageStudent import ManageStudent
 
 db_connection = psycopg2.connect(Secrets.PG_URI)
 
 
 # search user by name
 # show list of users with there names and pictures
-class SearchUser:
+class SearchStudent:
     def __init__(self, root):
         self.root = root
 
@@ -80,9 +80,7 @@ class SearchUser:
         print(selected_student)
         user_id = selected_student[Common.StudentsSchema.id]
 
-        ManageUser(self.root, user_id)
-
-        
+        ManageStudent(self.root, user_id)
 
     def on_closing(self):
         self.window.destroy()
