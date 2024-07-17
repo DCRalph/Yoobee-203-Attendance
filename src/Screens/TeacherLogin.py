@@ -1,7 +1,6 @@
-import tkinter as tk
+import customtkinter as ctk
+
 from tkinter import messagebox
-from tkinter import Toplevel
-from PIL import ImageTk
 import psycopg2
 from imgbeddings import imgbeddings
 from Secrets import Secrets
@@ -20,39 +19,39 @@ class TeacherLogin:
     def __init__(self, root):
         self.root = root
 
-        self.window = Toplevel(root)
+        self.window = ctk.CTkToplevel(root)
         self.window.title("Teacher Login")
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-        self.first_name_label = tk.Label(self.window, text="First Name:")
-        self.first_name_label.grid(row=0, column=0)
+        self.first_name_label = ctk.CTkLabel(self.window, text="First Name:")
+        self.first_name_label.grid(row=0, column=0, padx=5, pady=5)
 
-        self.first_name_entry = tk.Entry(self.window)
-        self.first_name_entry.grid(row=0, column=1)
+        self.first_name_entry = ctk.CTkEntry(self.window)
+        self.first_name_entry.grid(row=0, column=1, padx=5, pady=5)
 
-        self.last_name_label = tk.Label(self.window, text="Last Name:")
-        self.last_name_label.grid(row=1, column=0)
+        self.last_name_label = ctk.CTkLabel(self.window, text="Last Name:")
+        self.last_name_label.grid(row=1, column=0, padx=5, pady=5)
 
-        self.last_name_entry = tk.Entry(self.window)
-        self.last_name_entry.grid(row=1, column=1)
+        self.last_name_entry = ctk.CTkEntry(self.window)
+        self.last_name_entry.grid(row=1, column=1, padx=5, pady=5)
 
-        self.password_label = tk.Label(self.window, text="Password:")
-        self.password_label.grid(row=2, column=0)
+        self.password_label = ctk.CTkLabel(self.window, text="Password:")
+        self.password_label.grid(row=2, column=0, padx=5, pady=5)
 
-        self.password_entry = tk.Entry(self.window, show="*")
-        self.password_entry.grid(row=2, column=1)
+        self.password_entry = ctk.CTkEntry(self.window, show="*")
+        self.password_entry.grid(row=2, column=1, padx=5, pady=5)
 
-        self.login_button = tk.Button(
+        self.first_name_entry.insert(0, "w")
+        self.last_name_entry.insert(0, "w")
+        self.password_entry.insert(0, "w")
+
+        self.login_button = ctk.CTkButton(
             self.window,
             text="Login",
             command=self.login,
-            background="green",
-            foreground="white",
             font=("Helvetica", 16),
-            width=20,
-            height=2,
         )
-        self.login_button.grid(row=3, column=0, columnspan=2)
+        self.login_button.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
 
     def login(self):
         first_name = self.first_name_entry.get()

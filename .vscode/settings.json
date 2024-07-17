@@ -9,5 +9,5 @@
     "imgtk",
     "psycopg"
   ],
-  "cSpell.words": ["customtkinter", "padx", "pady"]
+  "cSpell.words": ["customtkinter", "padx", "pady", "rowspan"]
 }

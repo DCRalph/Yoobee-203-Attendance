@@ -1,8 +1,4 @@
-# import tkinter as tk
 import customtkinter as ctk
-from tkinter import messagebox
-from tkinter import Toplevel
-from PIL import ImageTk
 import psycopg2
 from imgbeddings import imgbeddings
 from Secrets import Secrets
@@ -25,8 +21,8 @@ class ScrollListBox(ctk.CTkScrollableFrame):
         self.label_list = []
         self.button_list = []
 
-    def add_item(self, id, item, image=None):
-        label = ctk.CTkLabel(self, text=item, image=image, compound="left", padx=5, anchor="w")
+    def add_item(self, id, item):
+        label = ctk.CTkLabel(self, text=item, compound="left", padx=5, anchor="w")
         button = ctk.CTkButton(self, text="Manage", width=100, height=24)
         if self.command is not None:
             button.configure(command=lambda: self.command(id))
@@ -43,14 +39,15 @@ class ScrollListBox(ctk.CTkScrollableFrame):
                 self.label_list.remove(label)
                 self.button_list.remove(button)
                 return
-            
+
     def remove_all_items(self):
         for label, button in zip(self.label_list, self.button_list):
             label.destroy()
             button.destroy()
         self.label_list.clear()
         self.button_list.clear()
-            
+
+
 class SearchStudent:
     def __init__(self, root):
         self.root = root
@@ -75,10 +72,10 @@ class SearchStudent:
         self.results_label = ctk.CTkLabel(self.window, text="Results:")
         self.results_label.grid(row=2, column=0, columnspan=2, pady=5)
 
-        self.results_listbox = ScrollListBox(self.window, command=self.on_user_selected, width=300)
+        self.results_listbox = ScrollListBox(
+            self.window, command=self.on_user_selected, width=300
+        )
         self.results_listbox.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
-
-        self.results_listbox.bind("<Double-Button-1>", self.on_user_selected)
 
     def search(self):
         first_name = self.first_name_entry.get()
