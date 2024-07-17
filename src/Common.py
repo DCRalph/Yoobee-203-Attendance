@@ -27,4 +27,18 @@ class Common:
         class_room = 3
         password = 4
 
+    class StudentAttendanceSchema:
+        id = 0
+        student_id = 1
+        date = 2
+        code = 3
+        entry_time = 4
+        exit_time = 5
+
+    class AttendanceCodes:
+        present = 'P'
+        absent = 'A'
+        late = 'L'
+        justified = 'J'
+
         

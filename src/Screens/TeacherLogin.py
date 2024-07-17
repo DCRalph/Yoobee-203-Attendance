@@ -68,7 +68,6 @@ class TeacherLogin:
 
         if teacher:
             self.window.destroy()
-            print(teacher)
             TeacherClassSelect(self.root, teacher)
         else:
             messagebox.showerror("Error", "Invalid Credentials")

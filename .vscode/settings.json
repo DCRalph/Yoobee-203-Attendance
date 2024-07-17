@@ -8,5 +8,6 @@
     "imgbeddings",
     "imgtk",
     "psycopg"
-  ]
+  ],
+  "cSpell.words": ["customtkinter", "padx", "pady"]
 }

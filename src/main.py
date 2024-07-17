@@ -1,30 +1,29 @@
-import tkinter as tk
+import customtkinter as ctk
 
 from Screens.CameraFeed import CameraFeed
 from Screens.SearchStudent import SearchStudent
 from Screens.TeacherLogin import TeacherLogin
 
-
-class MainWindow(tk.Tk):
+class MainWindow(ctk.CTk):
     def __init__(self):
         super().__init__()
 
         self.title("Main Window")
-        self.geometry("200x100")
+        self.geometry("200x150")
 
-        self.button = tk.Button(
+        self.button = ctk.CTkButton(
             self, text="Open Camera Feed", command=self.open_camera_feed
         )
-        self.button.pack()
+        self.button.pack(pady=5)
 
         # search user button
-        self.button = tk.Button(self, text="Search User", command=self.search_user)
-        self.button.pack()
+        self.button = ctk.CTkButton(self, text="Search User", command=self.search_user)
+        self.button.pack(pady=5)
 
-        self.teacher_login_button = tk.Button(
+        self.teacher_login_button = ctk.CTkButton(
             self, text="Teacher Login", command=self.teacher_login
         )
-        self.teacher_login_button.pack()
+        self.teacher_login_button.pack(pady=5)
 
         self.mainloop()
 
