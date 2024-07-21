@@ -1,3 +1,4 @@
+import datetime
 import customtkinter as ctk
 import psycopg2
 from imgbeddings import imgbeddings
@@ -59,6 +60,7 @@ class TeacherManageClass:
 
         self.students_array = []
         self.selected_student = None
+        self.selected_student_saved = False
 
         # Listbox to show the list of students
         self.students_listbox = ScrollListBox(
@@ -77,18 +79,51 @@ class TeacherManageClass:
         self.name_label = ctk.CTkLabel(self.window, text="Name:", anchor="w")
         self.name_label.grid(row=0, column=7, padx=5, pady=5)
 
+        self.attendance_label = ctk.CTkLabel(
+            self.window, text="Attendance Today:", anchor="w"
+        )
+        self.attendance_label.grid(row=1, column=7, padx=5, pady=5)
+
         self.attendance_today_select = ctk.CTkOptionMenu(
             self.window,
-            values=["Present", "Absent", "Late", "Justified"],
+            values=["N/A", Common.AttendanceCodes.present, Common.AttendanceCodes.absent, Common.AttendanceCodes.late, Common.AttendanceCodes.justified],
             command=self.on_attendance_today_selected,
         )
-        self.attendance_today_select.grid(row=1, column=7, padx=5, pady=5)
+        self.attendance_today_select.grid(row=1, column=8, padx=5, pady=5)
         self.attendance_today_select.configure(state="disabled")
+
+        self.entry_time_label = ctk.CTkLabel(
+            self.window, text="Entry Time:", anchor="w"
+        )
+        self.entry_time_label.grid(row=2, column=7, padx=5, pady=5)
+
+        self.entry_time_entry = ctk.CTkEntry(self.window)
+        self.entry_time_entry.grid(row=2, column=8, padx=5, pady=5)
+        self.entry_time_entry.configure(state="disabled")
+
+        self.entry_time_now_btn = ctk.CTkButton(
+            self.window, text="Now", command=self.entry_time_now
+        )
+        self.entry_time_now_btn.grid(row=2, column=9, padx=5, pady=5)
+        self.entry_time_now_btn.configure(state="disabled")
+
+        self.exit_time_label = ctk.CTkLabel(self.window, text="Exit Time:", anchor="w")
+        self.exit_time_label.grid(row=3, column=7, padx=5, pady=5)
+
+        self.exit_time_entry = ctk.CTkEntry(self.window)
+        self.exit_time_entry.grid(row=3, column=8, padx=5, pady=5)
+        self.exit_time_entry.configure(state="disabled")
+
+        self.exit_time_now_btn = ctk.CTkButton(
+            self.window, text="Now", command=self.exit_time_now
+        )
+        self.exit_time_now_btn.grid(row=3, column=9, padx=5, pady=5)
+        self.exit_time_now_btn.configure(state="disabled")
 
         self.next_student_button = ctk.CTkButton(
             self.window, text="Next Student", command=self.next_student
         )
-        self.next_student_button.grid(row=6, column=7, padx=5, pady=5)
+        self.next_student_button.grid(row=9, column=7, padx=5, pady=10)
 
         # Labels and entries to show student details
 
@@ -111,37 +146,150 @@ class TeacherManageClass:
             listboxStr = f"{i+1}. {student[Common.StudentsSchema.first_name]} {student[Common.StudentsSchema.last_name]}"
             self.students_listbox.add_item(i, listboxStr)
 
+        print(self.students_array)
+
     def on_student_selected(self, item):
         self.selected_student = item
         print(self.students_array[self.selected_student])
 
+        current_date = datetime.datetime.now().strftime("%d-%m-%Y")
+        current_time = datetime.datetime.now().strftime("%H:%M:%S")
+
+        cur = db_connection.cursor()
+        cur.execute(
+            'SELECT * FROM "student_attendance" WHERE "studentId" = %s AND "date" = %s',
+            (
+                self.students_array[self.selected_student][Common.StudentsSchema.id],
+                current_date,
+            ),
+        )
+        attendance = cur.fetchone()
+
         self.manage_student_button.configure(state="normal")
         self.attendance_today_select.configure(state="normal")
+        self.entry_time_entry.configure(state="normal")
+        self.exit_time_entry.configure(state="normal")
+        self.entry_time_now_btn.configure(state="normal")
+        self.exit_time_now_btn.configure(state="normal")
+
+        self.entry_time_entry.delete(0, "end")
+        self.exit_time_entry.delete(0, "end")
 
         self.name_label.configure(
             text=f"Name: {self.students_array[self.selected_student][Common.StudentsSchema.first_name]} {self.students_array[self.selected_student][Common.StudentsSchema.last_name]}"
         )
-        
-    def next_student(self):
-        if self.selected_student is None:
-            return
 
-        self.selected_student += 1
-        if self.selected_student >= len(self.students_array):
-            self.selected_student = 0
+        if attendance is None:
+            self.attendance_today_select.set("N/A")
+        else:
+            self.attendance_today_select.set(attendance[Common.StudentAttendanceSchema.code])
 
-        self.on_student_selected(self.selected_student)
+            if attendance[Common.StudentAttendanceSchema.entry_time] is not None:
+                self.entry_time_entry.insert(
+                    0, attendance[Common.StudentAttendanceSchema.entry_time]
+                )
+
+            if attendance[Common.StudentAttendanceSchema.exit_time] is not None:
+                self.exit_time_entry.insert(
+                    0, attendance[Common.StudentAttendanceSchema.exit_time]
+                )
 
     def on_attendance_today_selected(self, item):
         print(item)
+
+    def entry_time_now(self):
+        current_time = datetime.datetime.now().strftime("%H:%M:%S")
+        self.entry_time_entry.delete(0, "end")
+        self.entry_time_entry.insert(0, current_time)
+
+    def exit_time_now(self):
+        current_time = datetime.datetime.now().strftime("%H:%M:%S")
+        self.exit_time_entry.delete(0, "end")
+        self.exit_time_entry.insert(0, current_time)
+
+    def next_student(self):
+        if self.selected_student_saved is False and self.selected_student is not None:
+            self.save()
+            self.selected_student_saved = True
+
+        if self.selected_student is None:
+            if len(self.students_array) == 0:
+                return
+            self.selected_student = 0
+            self.selected_student_saved = False
+
+        else:
+            self.selected_student += 1
+            if self.selected_student >= len(self.students_array):
+                self.selected_student = 0
+                self.selected_student_saved = False
+
+        self.on_student_selected(self.selected_student)
+
+    def save(self):
+
+        attendance_code = self.attendance_today_select.get()
+        entry_time = self.entry_time_entry.get()
+        exit_time = self.exit_time_entry.get()
+
+        if entry_time == "":
+            entry_time = None
+        if exit_time == "":
+            exit_time = None
+
+        current_date = datetime.datetime.now().strftime("%d-%m-%Y")
+
+        cur = db_connection.cursor()
+        cur.execute(
+            'SELECT * FROM "student_attendance" WHERE "studentId" = %s AND "date" = %s',
+            (
+                self.students_array[self.selected_student][Common.StudentsSchema.id],
+                current_date,
+            ),
+        )
+        attendance = cur.fetchone()
+
+        if attendance is None:
+            cur.execute(
+                'INSERT INTO "student_attendance" ("id", "studentId", "date", "code", "entry_time", "exit_time") VALUES (%s, %s, %s, %s, %s, %s)',
+                (
+                    uuid.uuid4(),
+                    self.students_array[self.selected_student][
+                        Common.StudentsSchema.id
+                    ],
+                    current_date,
+                    attendance_code,
+                    entry_time,
+                    exit_time,
+                ),
+            )
+        else:
+            cur.execute(
+                'UPDATE "student_attendance" SET "code" = %s, "entry_time" = %s, "exit_time" = %s WHERE "id" = %s',
+                (
+                    attendance_code,
+                    entry_time,
+                    exit_time,
+                    attendance[Common.StudentAttendanceSchema.id],
+                ),
+            )
+
+        db_connection.commit()
 
     def manage_student(self):
         if self.selected_student is None:
             return
 
-        ManageStudent(self.root, self.students_array[self.selected_student][Common.StudentsSchema.id])
+        ManageStudent(
+            self.root,
+            self.students_array[self.selected_student][Common.StudentsSchema.id],
+        )
 
     def on_closing(self):
+        if self.selected_student_saved is False and self.selected_student is not None:
+            self.save()
+            self.selected_student_saved = True
+
         self.window.destroy()
         self.root.deiconify()
 

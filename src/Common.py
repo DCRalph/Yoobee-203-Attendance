@@ -36,10 +36,10 @@ class Common:
         exit_time = 5
 
     class AttendanceCodes:
-        present = 'P'
-        absent = 'A'
-        late = 'L'
-        justified = 'J'
+        present = 'Present'
+        absent = 'Absent'
+        late = 'Late'
+        justified = 'Justified'
 
 
         
