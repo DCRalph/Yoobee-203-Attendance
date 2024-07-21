@@ -105,8 +105,8 @@ class RegisterStudent:
             studentId = str(uuid.uuid4())
 
             cur.execute(
-                "INSERT INTO students VALUES (%s, %s, %s, %s, %s)",
-                (studentId, first_name, last_name, date_of_birth, gender),
+                "INSERT INTO students VALUES (%s, %s, %s, %s, %s %s)",
+                (studentId, first_name, last_name, date_of_birth, gender, "room -1"),
             )
 
         b64Img = HandleImages.save_image_to_cache(self.userImage, pictureId)
