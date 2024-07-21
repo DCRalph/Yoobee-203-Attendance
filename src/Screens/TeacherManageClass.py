@@ -253,7 +253,7 @@ class TeacherManageClass:
             cur.execute(
                 'INSERT INTO "student_attendance" ("id", "studentId", "date", "code", "entry_time", "exit_time") VALUES (%s, %s, %s, %s, %s, %s)',
                 (
-                    uuid.uuid4(),
+                    str(uuid.uuid4()),
                     self.students_array[self.selected_student][
                         Common.StudentsSchema.id
                     ],
