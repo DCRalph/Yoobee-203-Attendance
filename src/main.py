@@ -8,7 +8,7 @@ class MainWindow(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        self.title("Main Window")
+        self.title("School attendance system")
         self.geometry("200x150")
 
         self.button = ctk.CTkButton(

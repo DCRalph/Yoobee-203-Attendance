@@ -191,7 +191,7 @@ class ManageStudent:
     def delete(self):
         cur = db_connection.cursor()
         cur.execute(
-            'DELETE FROM student_attendance WHERE "student_id" = %s', (self.studentId,)
+            'DELETE FROM student_attendance WHERE "studentId" = %s', (self.studentId,)
         )
         cur.execute('DELETE FROM pictures WHERE "studentId" = %s', (self.studentId,))
         cur.execute("DELETE FROM students WHERE id = %s", (self.studentId,))

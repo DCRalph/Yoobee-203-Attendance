@@ -202,6 +202,15 @@ class CameraFeed:
                 tmpFaces.append((x, y, w, h))
         self.faces = tmpFaces
 
+        if len(self.faces) > 1:
+            biggest = 0
+            biggest_size = 0
+            for i, (x, y, w, h) in enumerate(self.faces):
+                if w * h > biggest_size:
+                    biggest = i
+                    biggest_size = w * h
+            self.faces = [self.faces[biggest]]
+
         if len(self.faces) == 0:
             print("No faces detected")
             messagebox.showerror("Error", "No faces detected")
@@ -335,6 +344,16 @@ class CameraFeed:
             if x > 400 and y > 100 and x + w < 880 and y + h < 620:
                 tmpFaces.append((x, y, w, h))
         self.faces = tmpFaces
+
+        # remove all except the biggest one
+        if len(self.faces) > 1:
+            biggest = 0
+            biggest_size = 0
+            for i, (x, y, w, h) in enumerate(self.faces):
+                if w * h > biggest_size:
+                    biggest = i
+                    biggest_size = w * h
+            self.faces = [self.faces[biggest]]
 
         if len(self.faces) == 0:
             print("No faces detected")

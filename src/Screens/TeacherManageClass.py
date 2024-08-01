@@ -228,6 +228,22 @@ class TeacherManageClass:
 
     def save(self):
 
+        # check if student exists
+        if self.selected_student is None:
+            return
+        
+        cur = db_connection.cursor()
+        cur.execute(
+            'SELECT * FROM "students" WHERE "id" = %s',
+            (
+                self.students_array[self.selected_student][Common.StudentsSchema.id],
+            ),
+        )
+        student = cur.fetchone()
+
+        if student is None:
+            return
+
         attendance_code = self.attendance_today_select.get()
         entry_time = self.entry_time_entry.get()
         exit_time = self.exit_time_entry.get()
