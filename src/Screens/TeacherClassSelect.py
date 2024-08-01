@@ -2,6 +2,7 @@ import customtkinter as ctk
 
 import psycopg2
 from imgbeddings import imgbeddings
+from Screens.CameraFeed import CameraFeed
 from Secrets import Secrets
 import uuid
 
@@ -68,13 +69,21 @@ class TeacherClassSelect:
         )
         self.open_your_class_btn.grid(row=0, column=0, columnspan=2, padx=5, pady=5)
 
+        #register student button
+        self.register_student_button = ctk.CTkButton(
+            self.window,
+            text="Register Student",
+            command=self.register_student,
+        )
+        self.register_student_button.grid(row=1, column=0, columnspan=2, padx=5, pady=5)
+
         self.all_classes_label = ctk.CTkLabel(self.window, text="All Classes (0):")
-        self.all_classes_label.grid(row=1, column=0, columnspan=2, padx=5, pady=5)
+        self.all_classes_label.grid(row=2, column=0, columnspan=2, padx=5, pady=5)
 
         self.all_classes_listbox = ScrollListBox(
             self.window, command=self.on_class_selected, width=300
         )
-        self.all_classes_listbox.grid(row=2, column=0, padx=10, pady=10)
+        self.all_classes_listbox.grid(row=3, column=0, padx=10, pady=10)
 
         self.classes_array = []
 
@@ -108,6 +117,9 @@ class TeacherClassSelect:
 
     def open_your_class(self):
         TeacherManageClass(self.root, self.teacher[Common.TeachersSchema.class_room])
+
+    def register_student(self):
+        CameraFeed(self.root, is_register=True)
 
     def on_closing(self):
         self.window.destroy()

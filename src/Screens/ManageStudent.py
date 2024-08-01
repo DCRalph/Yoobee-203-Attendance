@@ -51,6 +51,12 @@ class ManageStudent:
         self.class_room_entry = ctk.CTkEntry(self.window)
         self.class_room_entry.grid(row=2, column=1)
 
+        self.change_password_label = ctk.CTkLabel(self.window, text="Change Password:")
+        self.change_password_label.grid(row=2, column=2)
+
+        self.change_password_entry = ctk.CTkEntry(self.window)
+        self.change_password_entry.grid(row=2, column=3)
+
         self.update_button = ctk.CTkButton(
             self.window,
             text="Update",
@@ -119,7 +125,7 @@ class ManageStudent:
             self.image_carousel.configure(image="")
             return
 
-        img = ImageTk.PhotoImage(self.images[self.current_image])
+        img = ctk.CTkImage(self.images[self.current_image], size=(200, 200))
         self.image_carousel.configure(image=img)
         self.image_carousel.image = img
 
@@ -147,12 +153,34 @@ class ManageStudent:
         date_of_birth = self.date_of_birth_entry.get()
         gender = self.gender_entry.get()
         class_room = self.class_room_entry.get()
+        password = self.change_password_entry.get()
 
         cur = db_connection.cursor()
-        cur.execute(
-            "UPDATE students SET first_name = %s, last_name = %s, date_of_birth = %s, gender = %s, class_room = %s WHERE id = %s",
-            (first_name, last_name, date_of_birth, gender, class_room, self.studentId),
-        )
+        if password != "":
+            cur.execute(
+                "UPDATE students SET first_name = %s, last_name = %s, date_of_birth = %s, gender = %s, class_room = %s, password = %s WHERE id = %s",
+                (
+                    first_name,
+                    last_name,
+                    date_of_birth,
+                    gender,
+                    class_room,
+                    password,
+                    self.studentId,
+                ),
+            )
+        else:
+            cur.execute(
+                "UPDATE students SET first_name = %s, last_name = %s, date_of_birth = %s, gender = %s, class_room = %s WHERE id = %s",
+                (
+                    first_name,
+                    last_name,
+                    date_of_birth,
+                    gender,
+                    class_room,
+                    self.studentId,
+                ),
+            )
 
         db_connection.commit()
 
@@ -162,6 +190,9 @@ class ManageStudent:
 
     def delete(self):
         cur = db_connection.cursor()
+        cur.execute(
+            'DELETE FROM student_attendance WHERE "student_id" = %s', (self.studentId,)
+        )
         cur.execute('DELETE FROM pictures WHERE "studentId" = %s', (self.studentId,))
         cur.execute("DELETE FROM students WHERE id = %s", (self.studentId,))
 

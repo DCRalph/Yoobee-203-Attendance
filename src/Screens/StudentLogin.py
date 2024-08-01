@@ -2,18 +2,17 @@ import customtkinter as ctk
 
 from tkinter import messagebox
 import psycopg2
+from Screens.StudentPortal import StudentPortal
 from Secrets import Secrets
-
-from Screens.TeacherClassSelect import TeacherClassSelect
 
 db_connection = psycopg2.connect(Secrets.PG_URI)
 
-class TeacherLogin:
+class StudentLogin:
     def __init__(self, root):
         self.root = root
 
         self.window = ctk.CTkToplevel(root)
-        self.window.title("Teacher Login")
+        self.window.title("Student Login")
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         self.first_name_label = ctk.CTkLabel(self.window, text="First Name:")
@@ -34,9 +33,9 @@ class TeacherLogin:
         self.password_entry = ctk.CTkEntry(self.window, show="*")
         self.password_entry.grid(row=2, column=1, padx=5, pady=5)
 
-        self.first_name_entry.insert(0, "w")
-        self.last_name_entry.insert(0, "w")
-        self.password_entry.insert(0, "w")
+        # self.first_name_entry.insert(0, "w")
+        # self.last_name_entry.insert(0, "w")
+        # self.password_entry.insert(0, "w")
 
         self.login_button = ctk.CTkButton(
             self.window,
@@ -53,20 +52,22 @@ class TeacherLogin:
 
         cur = db_connection.cursor()
         cur.execute(
-            "SELECT * FROM teachers WHERE first_name = %s AND last_name = %s AND password = %s",
+            "SELECT * FROM students WHERE first_name = %s AND last_name = %s AND password = %s",
             (first_name, last_name, password),
         )
-        teacher = cur.fetchone()
+        student = cur.fetchone()
 
-        if teacher:
+        if student:
             self.window.destroy()
-            TeacherClassSelect(self.root, teacher)
+            StudentPortal(self.root, student[0])
         else:
             messagebox.showerror("Error", "Invalid Credentials")
 
             self.first_name_entry.delete(0, "end")
             self.last_name_entry.delete(0, "end")
             self.password_entry.delete(0, "end")
+
+
 
     def on_closing(self):
         self.window.destroy()

@@ -19,6 +19,7 @@ class Common:
         date_of_birth = 3
         gender = 4
         class_room = 5
+        password = 6
 
     class TeachersSchema:
         id = 0
